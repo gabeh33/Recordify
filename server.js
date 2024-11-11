@@ -9,13 +9,14 @@ const mongoose = require('mongoose');
 // The code that will run the server
 const app = express();
 app.use(express.json());
+// Serve static files from the 'public' folder
+app.use(express.static('public'));
+// Display
+app.set('view engine', 'ejs');
 
 // Networking
 const PORT = process.env.PORT || 5555;
 const uri = process.env.MONGODB_URI;
-
-// Display
-app.set('view engine', 'ejs');
 
 
 // Connect to the DB cloud 
@@ -71,16 +72,44 @@ app.get('/users', async (req, res) => {
 })
 
 
-// artists route to display the artists
+// Artists page
 app.get('/artists', async (req, res) => {
-  try {
-    const artists = await Artist.find(); // Query all artists from the database
+  const { search, sort, order, page = 1 } = req.query;
 
-    // Render the data using EJS
-    res.render('artists', { artists: artists });
+  const limit = 15; // Number of artists per page
+  const skip = (page - 1) * limit; // Skip artists based on the page number
+
+  const query = {};
+  if (search) {
+    query.artist_name = { $regex: search, $options: 'i' }; // Case-insensitive search
+  }
+
+  const sortBy = sort || 'artist_name';
+  const sortOrder = order === 'desc' ? -1 : 1;
+
+  try {
+    // Get artists from the database with search, sort, and pagination
+    const artists = await Artist.find(query)
+      .sort({ [sortBy]: sortOrder })
+      .skip(skip)
+      .limit(limit)
+      .exec();
+
+    // Get the total count of artists for pagination
+    const totalArtists = await Artist.countDocuments(query);
+    const totalPages = Math.ceil(totalArtists / limit);
+
+    res.render('artists', {
+      artists,
+      searchQuery: search || '',
+      sortBy,
+      sortOrder,
+      page: parseInt(page),
+      totalPages,
+    });
   } catch (error) {
     console.error('Error fetching artists:', error);
-    res.status(500).send('Error fetching artists');
+    res.status(500).send('Server Error');
   }
 });
 
