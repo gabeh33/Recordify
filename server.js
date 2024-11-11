@@ -1,4 +1,6 @@
 require('dotenv').config();
+
+// Database/server init
 const User = require('./Schemas/UserSchema');
 const express = require('express');
 const mongoose = require('mongoose');
@@ -7,14 +9,19 @@ const mongoose = require('mongoose');
 const app = express();
 app.use(express.json());
 
+// Networking
 const PORT = process.env.PORT || 5555;
 const uri = process.env.MONGODB_URI;
 
+// Spotify file
+const spot = require('./getartists');
+const getTopArtists = require('./getartists');
+const getArtists = require('./getartists');
 
+// Connect to the DB cloud 
 mongoose.connect(uri, {})
 .then(() => console.log('Connected to MongoDB'))
 .catch((err) => console.error('Failed to connect to MongoDB:', err));
-
 
 // Route to register a new user
 app.post('/register', async (req, res) => {
@@ -38,6 +45,10 @@ app.get('/ping', async (req, res) => {
   res.send("Pong");
 })
 
+app.get('/home', async (req, res) => {
+  res.send("Welcome to the future of music");
+})
+
 app.get('/display', async (req, res) => {
   try {
     // Fetch all users from the database
@@ -54,6 +65,21 @@ app.get('/display', async (req, res) => {
     console.log(error);
     res.status(500).send('Error fetching users');
   }
+})
+
+async function displayArtists() {
+  const artists = await getTopArtists();
+  return artists;
+}  
+
+app.get('/artists', (req, res) => {
+  displayArtists()
+    .then(artists => {
+      res.send(artists);  // Send the resolved artists data to the client
+    })
+    .catch(error => {
+      res.status(500).send('Error fetching artists');
+    });
 })
 
 app.listen(PORT, () => {
