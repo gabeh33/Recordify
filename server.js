@@ -14,9 +14,7 @@ const PORT = process.env.PORT || 5555;
 const uri = process.env.MONGODB_URI;
 
 // Spotify file
-const spot = require('./getartists');
 const getTopArtists = require('./getartists');
-const getArtists = require('./getartists');
 
 // Connect to the DB cloud 
 mongoose.connect(uri, {})
@@ -40,15 +38,18 @@ app.post('/register', async (req, res) => {
   }
 });
 
+// Ping the application to see if its up
 app.get('/ping', async (req, res) => {
   console.log("Ping received");
   res.send("Pong");
 })
 
+// Home page 
 app.get('/home', async (req, res) => {
   res.send("Welcome to the future of music");
 })
 
+// Display all the users in the database
 app.get('/display', async (req, res) => {
   try {
     // Fetch all users from the database
@@ -67,11 +68,13 @@ app.get('/display', async (req, res) => {
   }
 })
 
+// Get the artists 
 async function displayArtists() {
   const artists = await getTopArtists();
   return artists;
 }  
 
+// Display the artists, does not add them to the database 
 app.get('/artists', (req, res) => {
   displayArtists()
     .then(artists => {
@@ -81,6 +84,8 @@ app.get('/artists', (req, res) => {
       res.status(500).send('Error fetching artists');
     });
 })
+
+
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
