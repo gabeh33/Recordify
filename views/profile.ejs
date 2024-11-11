@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>User Profile</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="profile-container">
+    <h1>Welcome, <%= user.username %>!</h1>
+
+    <div class="balance">
+      <p>Balance: $<%= user.balance.toFixed(2) %></p>
+    </div>
+
+    <div class="deposit-section">
+      <h2>Deposit Money</h2>
+      <form action="/profile/deposit" method="POST">
+        <input type="number" name="amount" placeholder="Amount to deposit" min="1" required>
+        <button type="submit">Deposit</button>
+      </form>
+    </div>
+
+    <div class="tickets-section">
+        <h2>Your Tickets</h2>
+        <% if (user.tickets.length > 0) { %>
+          <ul>
+            <% user.tickets.forEach(ticket => { %>
+              <li>
+                <p>Artist: <%= ticket.artistId.artist_name %> - Quantity: <%= ticket.quantity %></p>
+              </li>
+            <% }) %>
+          </ul>
+        <% } else { %>
+          <p>You have no tickets yet.</p>
+        <% } %>
+    </div>
+
+    <div class="actions">
+      <a href="/artists">Buy More Tickets</a>
+      <a href="/logout">Logout</a>
+    </div>
+  </div>
+</body>
+</html>

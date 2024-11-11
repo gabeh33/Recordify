@@ -8,7 +8,14 @@ const userSchema = new mongoose.Schema({
     username: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true }, // Need to hash before saving of course
-    tickets: {type: Number, required: false}
+    tickets: [
+        {
+          artistId: { type: mongoose.Schema.Types.ObjectId, ref: 'Artist' },
+          quantity: { type: Number, default: 1 },
+          purchasedAt: { type: Date, default: Date.now }
+        }
+      ],
+    balance: {type: Number, default: 0}
 });
 
 userSchema.pre('save', async function(next) {

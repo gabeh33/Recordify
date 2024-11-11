@@ -15,6 +15,14 @@ app.use(express.static('public'));
 app.set('view engine', 'ejs');
 app.use(express.urlencoded({ extended: true }));  // This ensures form data is parsed
 
+const session = require('express-session');
+
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'yourSecretKey',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false }, // For non-HTTPS (ensure this is true for production HTTPS)
+}));
 
 // Networking
 const PORT = process.env.PORT || 5555;
@@ -26,20 +34,59 @@ mongoose.connect(uri, {})
 .then(() => console.log('Connected to MongoDB'))
 .catch((err) => console.error('Failed to connect to MongoDB:', err));
 
-// Route to register a new user
-app.post('/register', async (req, res) => {
-  const { username, email, password } = req.body;
-  
+function isAuthenticated(req, res, next) {
+  if (req.session.userId) {
+    return next();
+  }
+  res.redirect('/login'); // Redirect to login if not authenticated
+}
+
+// Profile route to display user data
+// In the profile route
+app.get('/profile', async (req, res) => {
+  if (!req.session.userId) {
+    return res.redirect('/login'); // Redirect to login if not authenticated
+  }
+
   try {
-      // Create a new user instance with the request data
-      const newUser = new User({ username, email, password });
-      
-      // Save the new user to the database
-      await newUser.save();
-      
-      res.status(201).json({ message: 'User registered successfully' });
+    const user = await User.findById(req.session.userId)
+      .populate('tickets.artistId')  // Populate artist data
+      .select('username email tickets balance');
+
+    if (!user) {
+      return res.redirect('/login');
+    }
+
+    res.render('profile', { user });
   } catch (error) {
-      res.status(400).json({ error: 'Error registering user' });
+    console.error(error);
+    res.status(500).send('Server Error');
+  }
+});
+
+// Deposit money route
+app.post('/profile/deposit', isAuthenticated, async (req, res) => {
+  const { amount } = req.body;
+  try {
+    const depositAmount = parseFloat(amount);
+    if (isNaN(depositAmount) || depositAmount <= 0) {
+      return res.status(400).send("Invalid deposit amount.");
+    }
+
+    const user = await User.findByIdAndUpdate(req.session.userId, {
+      $inc: { balance: depositAmount },
+    }, { new: true }); // Make sure we return the updated user
+
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+
+    // Update session user data
+    req.session.user = user; // Ensure the session is updated
+    res.redirect('/profile'); // Redirect back to the profile page
+  } catch (error) {
+    console.error("Error updating balance:", error);
+    res.redirect('/profile');
   }
 });
 
@@ -115,32 +162,57 @@ app.get('/artists', async (req, res) => {
 
 /////////////////////////////////////////////// BUY/SELL PAGES ///////////////////////////////////////////////
 
-// Buy a share
 app.post('/artists/buy', async (req, res) => {
   const artistId = req.body.artistId;
-  console.log(artistId);
+  const userId = req.session.userId;
+
   try {
-    // Find the artist in the database
+    // Find the artist
     const artist = await Artist.findById(artistId);
-    
     if (!artist) {
       return res.status(404).send('Artist not found');
     }
 
+    const ticketPrice = artist.ticket_info.ticket_price;
     // Check if tickets are available
-    if (artist.ticket_info.num_tickets_available > 0) {
-      // Decrease the number of available tickets
-      artist.ticket_info.num_tickets_available -= 1;
-
-      // Save the updated artist document
-      await artist.save();
-
-      res.send(`<h2>Successfully bought a ticket for ${artist.artist_name}!</h2>`);
-    } else {
-      res.send('<h2>No tickets available to buy!</h2>');
+    if (artist.ticket_info.num_tickets_available <= 0) {
+      return res.send('<h2>No tickets available to buy!</h2>');
     }
+
+    // Find the user
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).send('User not found');
+    }
+
+    // Check if user has enough balance
+    if (user.balance < ticketPrice) {
+      return res.send('<h2>You do not have enough balance to buy this ticket!</h2>');
+    }
+
+    // Deduct the balance from the user
+    user.balance -= ticketPrice;
+
+    // Add the ticket to the user's collection (if the ticket already exists, increment the quantity)
+    const ticketIndex = user.tickets.findIndex(ticket => ticket.artistId.toString() === artistId);
+    if (ticketIndex !== -1) {
+      // Update the existing ticket quantity
+      user.tickets[ticketIndex].quantity += 1;
+    } else {
+      // Add new ticket
+      user.tickets.push({ artistId: artistId, quantity: 1 });
+    }
+
+    // Save the user document
+    await user.save();
+
+    // Decrease the number of tickets available for the artist
+    artist.ticket_info.num_tickets_available -= 1;
+    await artist.save();
+
+    res.send(`<h2>Successfully bought a ticket for ${artist.artist_name}!</h2>`);
   } catch (error) {
-    console.error(error);
+    console.error('Error buying ticket:', error);
     res.status(500).send('Error processing the buy request');
   }
 });
@@ -176,25 +248,21 @@ app.get('/login', (req, res) => {
   res.render('login');
 });
 
-// Handle login form submission
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
 
   try {
-    // Find user by username
     const user = await User.findOne({ username });
     if (!user) {
-      // If no user is found, pass an error to the template
       return res.render('login', { error: 'Invalid username or password' });
     }
 
-    // Compare the entered password with the stored password
     const isMatch = await user.comparePassword(password);
     if (isMatch) {
-      // Redirect to artists page upon successful login
-      res.redirect('/artists');
+      req.session.userId = user._id; // Store user ID in session
+      req.session.user = user; // Store user object in session
+      res.redirect('/profile');
     } else {
-      // If the password is incorrect, pass an error to the template
       res.render('login', { error: 'Invalid username or password' });
     }
   } catch (error) {
@@ -202,6 +270,19 @@ app.post('/login', async (req, res) => {
     res.render('login', { error: 'An error occurred. Please try again.' });
   }
 });
+
+/////////////////////////////////////////////// LOGOUT PAGE ///////////////////////////////////////////////
+
+app.post('/logout', (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).send('Error logging out');
+    }
+    res.redirect('/login');
+  });
+});
+
+
 
 /////////////////////////////////////////////// SIGNUP PAGES ///////////////////////////////////////////////
 // Render signup page
@@ -241,7 +322,10 @@ app.get('/home', (req, res) => {
   res.render('home');
 });
 
-
+// Redirect root '/' to '/home'
+app.get('/', (req, res) => {
+  res.redirect('/home');
+});
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

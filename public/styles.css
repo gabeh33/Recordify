@@ -1,4 +1,4 @@
-/* Global styles */
+/* Global Reset */
 * {
   margin: 0;
   padding: 0;
@@ -9,7 +9,7 @@ body {
   font-family: Arial, sans-serif;
   background-color: #f4f4f9;
   color: #333;
-  padding: 20px;
+  margin: 0;
 }
 
 header {
@@ -17,41 +17,120 @@ header {
   margin-bottom: 20px;
 }
 
-h1 {
-  font-size: 2.5em;
-  color: #333;
+/* Containers */
+.container, .login-container, .signup-container, .profile-container {
+  max-width: 400px;
+  margin: 5rem auto;
+  padding: 2rem;
+  text-align: center;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+.profile-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 800px;
+}
+
+/* Headings */
+h1 {
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 1.5rem;
+}
+
+h1.profile-title {
+  font-size: 1.8rem;
+}
+
+p, label {
+  font-size: 1.1rem;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+/* Forms */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+input {
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+input[type="number"] {
+  width: 60%;
+  font-size: 1em;
+  margin-right: 5px;
+}
+
+/* Buttons */
+button {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+button:hover {
+  background-color: #45a049;
+  transform: scale(1.05);
+}
+
+.buy-button {
+  background-color: #28a745; /* Green */
+}
+
+.buy-button:hover {
+  background-color: #218838;
+}
+
+.sell-button {
+  background-color: #dc3545; /* Red */
+}
+
+.sell-button:hover {
+  background-color: #c82333;
+}
+
+/* Search Form */
 .search-form {
   display: flex;
   justify-content: center;
+  align-items: center;
   margin-top: 10px;
+  gap: 10px;
 }
 
 .search-form input {
+  width: 250px;
   padding: 10px;
   font-size: 1em;
   border: 1px solid #ddd;
   border-radius: 5px;
-  width: 250px;
+  justify-content: center;
 }
 
 .search-form button {
   padding: 10px 15px;
-  background-color: #4CAF50;
-  border: none;
-  border-radius: 5px;
-  color: white;
-  font-size: 1em;
-  cursor: pointer;
   margin-left: 10px;
 }
 
-.search-form button:hover {
-  background-color: #45a049;
-}
-
-/* Artist grid styles */
+/* Artist Grid */
 .artists-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -61,33 +140,17 @@ h1 {
 }
 
 .artist-card {
+  width: 100%;
+  max-width: 300px;
+  padding: 20px;
+  text-align: center;
   background-color: #fff;
   border: 1px solid #ddd;
   border-radius: 8px;
-  padding: 20px;
-  text-align: center;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 300px;
 }
 
-.artist-card h3 {
-  font-size: 1.5em;
-  color: #333;
-  margin-bottom: 10px;
-}
-
-.artist-card p {
-  font-size: 1em;
-  color: #555;
-  margin-bottom: 8px;
-}
-
-.artist-card strong {
-  color: #333;
-}
-
-/* Pagination styles */
+/* Pagination */
 .pagination {
   text-align: center;
   margin-top: 20px;
@@ -95,10 +158,10 @@ h1 {
 
 .pagination a {
   padding: 10px 15px;
-  text-decoration: none;
   color: #fff;
   background-color: #4CAF50;
   border-radius: 5px;
+  text-decoration: none;
   margin: 0 5px;
 }
 
@@ -111,191 +174,14 @@ h1 {
   cursor: not-allowed;
 }
 
-/* Add this to your styles.css */
-
-.artist-card {
-  border: 1px solid #ddd;
-  padding: 20px;
-  margin: 10px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  background-color: #fff;
-}
-
-button {
-  font-size: 14px;
-  padding: 10px 20px;
-  margin-top: 10px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.3s ease, transform 0.3s ease;
-}
-
-button:hover {
-  transform: scale(1.05); /* Slightly enlarge the button on hover */
-}
-
-/* Buy Button - Green */
-button.buy-button {
-  background-color: #28a745; /* Green */
-  color: white;
-  border: none;
-}
-
-button.buy-button:hover {
-  background-color: #218838; /* Darker green */
-}
-
-/* Sell Button - Red */
-button.sell-button {
-  background-color: #dc3545; /* Red */
-  color: white;
-  border: none;
-}
-
-button.sell-button:hover {
-  background-color: #c82333; /* Darker red */
-}
-
-/* public/styles.css */
-
-body {
-  font-family: Arial, sans-serif;
-  background-color: #f4f4f9;
-  margin: 0;
-  padding: 0;
-}
-
-.container, .login-container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
-
-h1 {
-  color: #333;
-  font-size: 2.5rem;
-  margin-bottom: 1.5rem;
-}
-
-p {
-  font-size: 1.2rem;
-  margin-bottom: 2rem;
-}
-
-.nav-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 2rem;
-}
-
-.button {
+/* Links */
+a {
+  color: #4CAF50;
   text-decoration: none;
-  background-color: #4CAF50;
-  color: white;
-  padding: 0.5rem 1.5rem;
-  border-radius: 5px;
-  font-size: 1rem;
-  transition: background-color 0.3s ease;
 }
 
-.button:hover {
-  background-color: #45a049;
-}
-
-.login-container {
-  padding-top: 5rem;
-}
-
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  max-width: 400px;
-  margin: 0 auto;
-}
-
-input {
-  padding: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 1rem;
-}
-
-button {
-  background-color: #4CAF50;
-  color: white;
-  padding: 1rem;
-  border: none;
-  border-radius: 5px;
-  font-size: 1rem;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #45a049;
-}
-
-/* public/styles.css */
-
-body {
-  font-family: Arial, sans-serif;
-  background-color: #f4f4f9;
-  margin: 0;
-  padding: 0;
-}
-
-.login-container {
-  max-width: 400px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  margin-top: 5rem;
-}
-
-h1 {
-  color: #333;
-  font-size: 2rem;
-  margin-bottom: 1.5rem;
-}
-
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-label {
-  text-align: left;
-  font-size: 1rem;
-  color: #333;
-}
-
-input {
-  padding: 0.75rem;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 1rem;
-}
-
-button {
-  background-color: #4CAF50;
-  color: white;
-  padding: 1rem;
-  border: none;
-  border-radius: 5px;
-  font-size: 1.2rem;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #45a049;
+a:hover {
+  text-decoration: underline;
 }
 
 .error-message {
@@ -303,67 +189,7 @@ button:hover {
   font-size: 1rem;
   margin-bottom: 1rem;
 }
-/* styles.css */
 
-body {
-  font-family: Arial, sans-serif;
-  background-color: #f4f4f9;
-  margin: 0;
-  padding: 0;
-}
-
-.signup-container, .login-container {
-  max-width: 400px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  margin-top: 5rem;
-}
-
-h1 {
-  color: #333;
-  font-size: 2rem;
-  margin-bottom: 1.5rem;
-}
-
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-label {
-  text-align: left;
-  font-size: 1rem;
-  color: #333;
-}
-
-input {
-  padding: 0.75rem;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 1rem;
-}
-
-button {
-  background-color: #4CAF50;
-  color: white;
-  padding: 1rem;
-  border: none;
-  border-radius: 5px;
-  font-size: 1.2rem;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #45a049;
-}
-
-.error-message {
-  color: red;
-  font-size: 1rem;
-  margin-bottom: 1rem;
+.tickets {
+  margin-top: 20px;
 }
