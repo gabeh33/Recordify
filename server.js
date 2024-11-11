@@ -2,6 +2,7 @@ require('dotenv').config();
 
 // Database/server init
 const User = require('./Schemas/UserSchema');
+const Artist = require('./Schemas/ArtistSchema');
 const express = require('express');
 const mongoose = require('mongoose');
 
@@ -13,8 +14,9 @@ app.use(express.json());
 const PORT = process.env.PORT || 5555;
 const uri = process.env.MONGODB_URI;
 
-// Spotify file
-const getTopArtists = require('./getartists');
+// Display
+app.set('view engine', 'ejs');
+
 
 // Connect to the DB cloud 
 mongoose.connect(uri, {})
@@ -50,7 +52,7 @@ app.get('/home', async (req, res) => {
 })
 
 // Display all the users in the database
-app.get('/display', async (req, res) => {
+app.get('/users', async (req, res) => {
   try {
     // Fetch all users from the database
     const users = await User.find();
@@ -68,22 +70,19 @@ app.get('/display', async (req, res) => {
   }
 })
 
-// Get the artists 
-async function displayArtists() {
-  const artists = await getTopArtists();
-  return artists;
-}  
 
-// Display the artists, does not add them to the database 
-app.get('/artists', (req, res) => {
-  displayArtists()
-    .then(artists => {
-      res.send(artists);  // Send the resolved artists data to the client
-    })
-    .catch(error => {
-      res.status(500).send('Error fetching artists');
-    });
-})
+// artists route to display the artists
+app.get('/artists', async (req, res) => {
+  try {
+    const artists = await Artist.find(); // Query all artists from the database
+
+    // Render the data using EJS
+    res.render('artists', { artists: artists });
+  } catch (error) {
+    console.error('Error fetching artists:', error);
+    res.status(500).send('Error fetching artists');
+  }
+});
 
 
 

@@ -5,8 +5,13 @@ const axios = require('axios');
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
 
-//Schema 
+//Schema and DB
 const Artist = require('./Schemas/ArtistSchema');
+const mongoose = require('mongoose');
+
+// Networking
+const PORT = process.env.PORT || 5555;
+const uri = process.env.MONGODB_URI;
 
 //Get the spotify access token
 const getAccessToken = async () => {
@@ -30,6 +35,7 @@ const getAccessToken = async () => {
     }
   };
 
+// Function that just outputs the top 50 artists at any time
 async function getTopArtists() {
     // Use the global top 50 playlist
     const playlistId = '37i9dQZEVXbMDoHDwVN2tF';  // Spotify's Top 50 Global Playlist
@@ -93,9 +99,13 @@ async function populateArtistById(artistId) {
   }
 }
 
-async function getArtistIDs() {
-    const playlistId = '37i9dQZEVXbMDoHDwVN2tF';
+async function populateDB() {
+    const playlistId = '37i9dQZF1EIcx70PR7jg4L';
     const access_token = await getAccessToken();
+
+    mongoose.connect(uri, {})
+    .then(() => console.log('Connected to MongoDB'))
+    .catch((err) => console.error('Failed to connect to MongoDB:', err));
 
     try {
         const response = await axios.get(
@@ -114,18 +124,21 @@ async function getArtistIDs() {
           );
         console.log(artistIds);
 
-        for (let i = 0; i < artistIds.length; i++) {
-            populateArtistById(artistIds[i]);
+        for (let i = 0; i < artistIds.length - 1; i++) {
+            await populateArtistById(artistIds[i]);
         }
+        console.log("exited for loop")
         return response.data;
       } catch (error) {
         console.error('Error fetching artists:', error);
+      } finally {
+        mongoose.connection.close(); // Close the connection after all artists have been processed
+        console.log("Database connection closed");
       }
 }
-
-
-
-
-  getArtistIDs();
-  module.exports = getTopArtists;
+function main() {
+  populateDB();
+  
+}
+  //main();
   
