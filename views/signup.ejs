@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Signup</title>
+  <link rel="stylesheet" href="/styles.css"> <!-- Link to the CSS file -->
+</head>
+<body>
+  <div class="signup-container">
+    <h1>Create Your Account</h1>
+    
+    <!-- Display error message if provided -->
+    
+    <form method="POST" action="/signup">
+      <label for="username">Username:</label>
+      <input type="text" name="username" id="username" required>
+
+      <label for="email">Email:</label>
+      <input type="email" name="email" id="email" required>
+
+      <label for="password">Password:</label>
+      <input type="password" name="password" id="password" required>
+
+      <button type="submit" class="button">Signup</button>
+    </form>
+    
+    <p>Already have an account? <a href="/login">Login</a></p> <!-- Link to login page -->
+  </div>
+</body>
+</html>

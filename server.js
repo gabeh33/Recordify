@@ -13,6 +13,8 @@ app.use(express.json());
 app.use(express.static('public'));
 // Display
 app.set('view engine', 'ejs');
+app.use(express.urlencoded({ extended: true }));  // This ensures form data is parsed
+
 
 // Networking
 const PORT = process.env.PORT || 5555;
@@ -47,10 +49,7 @@ app.get('/ping', async (req, res) => {
   res.send("Pong");
 })
 
-// Home page 
-app.get('/home', async (req, res) => {
-  res.send("Welcome to the future of music");
-})
+/////////////////////////////////////////////// DISPLAY USERS PAGE ///////////////////////////////////////////////
 
 // Display all the users in the database
 app.get('/users', async (req, res) => {
@@ -71,6 +70,7 @@ app.get('/users', async (req, res) => {
   }
 })
 
+/////////////////////////////////////////////// ARTISTS PAGE ///////////////////////////////////////////////
 
 // Artists page
 app.get('/artists', async (req, res) => {
@@ -111,6 +111,134 @@ app.get('/artists', async (req, res) => {
     console.error('Error fetching artists:', error);
     res.status(500).send('Server Error');
   }
+});
+
+/////////////////////////////////////////////// BUY/SELL PAGES ///////////////////////////////////////////////
+
+// Buy a share
+app.post('/artists/buy', async (req, res) => {
+  const artistId = req.body.artistId;
+  console.log(artistId);
+  try {
+    // Find the artist in the database
+    const artist = await Artist.findById(artistId);
+    
+    if (!artist) {
+      return res.status(404).send('Artist not found');
+    }
+
+    // Check if tickets are available
+    if (artist.ticket_info.num_tickets_available > 0) {
+      // Decrease the number of available tickets
+      artist.ticket_info.num_tickets_available -= 1;
+
+      // Save the updated artist document
+      await artist.save();
+
+      res.send(`<h2>Successfully bought a ticket for ${artist.artist_name}!</h2>`);
+    } else {
+      res.send('<h2>No tickets available to buy!</h2>');
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error processing the buy request');
+  }
+});
+
+// Sell route
+app.post('/artists/sell', async (req, res) => {
+  const artistId = req.body.artistId;
+
+  try {
+    // Find the artist in the database
+    const artist = await Artist.findById(artistId);
+
+    if (!artist) {
+      return res.status(404).send('Artist not found');
+    }
+
+    // Increase the number of available tickets
+    artist.ticket_info.num_tickets_available += 1;
+
+    // Save the updated artist document
+    await artist.save();
+
+    res.send(`<h2>Successfully sold a ticket for ${artist.artist_name}!</h2>`);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error processing the sell request');
+  }
+});
+
+/////////////////////////////////////////////// LOGIN PAGES ///////////////////////////////////////////////
+// Render login page
+app.get('/login', (req, res) => {
+  res.render('login');
+});
+
+// Handle login form submission
+app.post('/login', async (req, res) => {
+  const { username, password } = req.body;
+
+  try {
+    // Find user by username
+    const user = await User.findOne({ username });
+    if (!user) {
+      // If no user is found, pass an error to the template
+      return res.render('login', { error: 'Invalid username or password' });
+    }
+
+    // Compare the entered password with the stored password
+    const isMatch = await user.comparePassword(password);
+    if (isMatch) {
+      // Redirect to artists page upon successful login
+      res.redirect('/artists');
+    } else {
+      // If the password is incorrect, pass an error to the template
+      res.render('login', { error: 'Invalid username or password' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.render('login', { error: 'An error occurred. Please try again.' });
+  }
+});
+
+/////////////////////////////////////////////// SIGNUP PAGES ///////////////////////////////////////////////
+// Render signup page
+app.get('/signup', (req, res) => {
+  res.render('signup');
+});
+
+// Handle signup form submission
+app.post('/signup', async (req, res) => {
+  const { username, password, email } = req.body;
+
+  try {
+    // Check if user already exists
+    const existingUser = await User.findOne({ username });
+    if (existingUser) {
+      return res.render('signup', { error: 'Username already taken' });
+    }
+
+    // Create new user
+    const newUser = new User({
+      username,
+      password,
+      email,
+    });
+
+    await newUser.save();
+    res.redirect('/login'); // Redirect to login page after successful signup
+  } catch (error) {
+    console.error(error);
+    res.render('signup', { error: 'Error during signup, please try again' });
+  }
+});
+
+
+/////////////////////////////////////////////// HOME PAGES ///////////////////////////////////////////////
+app.get('/home', (req, res) => {
+  res.render('home');
 });
 
 

@@ -4,12 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Artists</title>
-  <link rel="stylesheet" href="/styles.css"> <!-- Link to your CSS -->
+  <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
   <header>
     <h1>Artist List</h1>
-    <!-- Search Form -->
     <form method="GET" action="/artists" class="search-form">
       <input type="text" name="search" placeholder="Search artists..." value="<%= searchQuery %>">
       <button type="submit">Search</button>
@@ -17,7 +16,6 @@
   </header>
 
   <main>
-    <!-- Artist Grid -->
     <div class="artists-grid">
       <% artists.forEach(artist => { %>
         <div class="artist-card">
@@ -25,6 +23,16 @@
           <p><strong>Popularity:</strong> <%= artist.popularity %></p>
           <p><strong>Tickets Available:</strong> <%= artist.ticket_info.num_tickets_available %></p>
           <p><strong>Ticket Price:</strong> $<%= artist.ticket_info.ticket_price %></p>
+
+          <!-- Buy and Sell Buttons with specific class names -->
+          <form method="POST" action="/artists/buy">
+            <input type="hidden" name="artistId" value="<%= artist._id %>">
+            <button type="submit" class="buy-button">Buy</button>
+          </form>
+          <form method="POST" action="/artists/sell">
+            <input type="hidden" name="artistId" value="<%= artist._id %>">
+            <button type="submit" class="sell-button">Sell</button>
+          </form>
         </div>
       <% }) %>
     </div>

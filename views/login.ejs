@@ -1,0 +1,30 @@
+<!-- views/login.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <link rel="stylesheet" href="/styles.css"> <!-- Link to the CSS file -->
+</head>
+<body>
+  <div class="login-container">
+    <h1>Login to Your Account</h1>
+    
+    <!-- Display error message if provided -->
+    
+    <form method="POST" action="/login">
+      <label for="username">Username:</label>
+      <input type="text" name="username" id="username" required>
+      
+      <label for="password">Password:</label>
+      <input type="password" name="password" id="password" required>
+
+      <button type="submit" class="button">Login</button>
+    </form>
+    
+    <p>Don't have an account? <a href="/signup">Sign up</a></p> <!-- Link to sign up page -->
+  </div>
+</body>
+</html>
