@@ -14,6 +14,9 @@ app.use(express.static('public'));
 // Display
 app.set('view engine', 'ejs');
 app.use(express.urlencoded({ extended: true }));  // This ensures form data is parsed
+const expressLayouts = require('express-ejs-layouts');
+app.use(expressLayouts);
+app.set('layout', 'layouts/main');
 
 const session = require('express-session');
 
@@ -47,7 +50,7 @@ app.get('/profile', async (req, res) => {
   if (!req.session.userId) {
     return res.redirect('/login'); // Redirect to login if not authenticated
   }
-
+  const user = req.session.user; 
   try {
     const user = await User.findById(req.session.userId)
       .populate('tickets.artistId')  // Populate artist data
@@ -57,7 +60,10 @@ app.get('/profile', async (req, res) => {
       return res.redirect('/login');
     }
 
-    res.render('profile', { user });
+    res.render('profile', { 
+      user, activePage: 
+      'profile',
+      title: 'profile' });
   } catch (error) {
     console.error(error);
     res.status(500).send('Server Error');
@@ -121,6 +127,9 @@ app.get('/users', async (req, res) => {
 
 // Artists page
 app.get('/artists', async (req, res) => {
+  const searchQuery = req.query.search || '';
+  //res.render('artists', {activePage: 'artists', title: 'artists', searchQuery: searchQuery });
+  
   const { search, sort, order, page = 1 } = req.query;
 
   const limit = 15; // Number of artists per page
@@ -153,6 +162,8 @@ app.get('/artists', async (req, res) => {
       sortOrder,
       page: parseInt(page),
       totalPages,
+      activePage: 'artists',
+      title: 'artists',
     });
   } catch (error) {
     console.error('Error fetching artists:', error);
@@ -245,7 +256,7 @@ app.post('/artists/sell', async (req, res) => {
 /////////////////////////////////////////////// LOGIN PAGES ///////////////////////////////////////////////
 // Render login page
 app.get('/login', (req, res) => {
-  res.render('login');
+  res.render('login', { activePage: 'login', title: 'login'});
 });
 
 app.post('/login', async (req, res) => {
@@ -287,7 +298,8 @@ app.post('/logout', (req, res) => {
 /////////////////////////////////////////////// SIGNUP PAGES ///////////////////////////////////////////////
 // Render signup page
 app.get('/signup', (req, res) => {
-  res.render('signup');
+  res.render('signup', { activePage: 'signup', title: 'signup' });
+ 
 });
 
 // Handle signup form submission
@@ -319,7 +331,7 @@ app.post('/signup', async (req, res) => {
 
 /////////////////////////////////////////////// HOME PAGES ///////////////////////////////////////////////
 app.get('/home', (req, res) => {
-  res.render('home');
+  res.render('home', { activePage: 'home', title: 'home' });
 });
 
 // Redirect root '/' to '/home'
