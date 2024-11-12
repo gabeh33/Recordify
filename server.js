@@ -79,6 +79,7 @@ app.post('/profile/deposit', isAuthenticated, async (req, res) => {
       return res.status(400).send("Invalid deposit amount.");
     }
 
+    
     const user = await User.findByIdAndUpdate(req.session.userId, {
       $inc: { balance: depositAmount },
     }, { new: true }); // Make sure we return the updated user
