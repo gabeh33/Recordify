@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { socialPage } = require('../controllers/socialController');
+const { socialPage, newsPage } = require('../controllers/socialController');
 
 // Profile and deposit routes
-router.get('/', socialPage);
-
+router.get('/friends', socialPage);
+router.get('/', newsPage);
 module.exports = router;
