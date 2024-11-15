@@ -14,8 +14,11 @@
     <h1>Login to Your Account</h1>
     
     <!-- Display error message if provided -->
+    <% if (error) { %>
+      <p class="error-message"><%= error %></p>
+    <% } %>
     
-    <form method="POST" action="/login">
+    <form method="POST" action="/auth/login">
       <label for="username">Username:</label>
       <input type="text" name="username" id="username" required>
       
@@ -25,7 +28,7 @@
       <button type="submit" class="button">Login</button>
     </form>
     
-    <p>Don't have an account? <a href="/signup">Sign up</a></p> <!-- Link to sign up page -->
+    <p>Don't have an account? <a href="/auth/signup">Sign up</a></p> <!-- Link to sign up page -->
   </div>
 </body>
 </html>

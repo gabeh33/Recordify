@@ -6,6 +6,8 @@ const connectDB = require('./config/db');           // Database connection
 const authRoutes = require('./routes/authRoutes');   // Authentication routes
 const artistRoutes = require('./routes/artistRoutes'); // Artist routes
 const userRoutes = require('./routes/userRoutes');   // User routes
+const socialRoutes = require('./routes/socialRoutes');   // User routes
+const my_session = require('./config/session');
 
 // Initialize express app
 const app = express();
@@ -16,12 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));                  // Serve static files
 
 // Session setup
-app.use(session({
-  secret: process.env.SESSION_SECRET || 'yourSecretKey',
-  resave: false,
-  saveUninitialized: true,
-  cookie: { secure: false },
-}));
+app.use(session(my_session));
 
 // View engine
 app.set('view engine', 'ejs');
@@ -34,7 +31,7 @@ connectDB();
 // Routes
 app.use('/auth', authRoutes);      // All auth-related routes
 app.use('/artists', artistRoutes); // All artist-related routes
-app.use('/user', userRoutes);      // All user-related routes
+app.use('/profile', userRoutes);      // All user-related routes
 
 // Basic routes
 app.get('/', (req, res) => res.redirect('/home'));
@@ -42,6 +39,16 @@ app.get('/home', (req, res) => res.render('home', { activePage: 'home', title: '
 
 // Ping route for health check
 app.get('/ping', (req, res) => res.send("Pong"));
+
+
+app.use('/social', socialRoutes);
+
+// Catchall for logging in
+app.get('/login', (req, res) => res.redirect('/auth/login'));
+// Catchall for logging in
+app.post('/logout', (req, res) => res.redirect('/auth/logout'));
+
+
 
 // Start server
 const PORT = process.env.PORT || 5555;

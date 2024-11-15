@@ -1,0 +1,38 @@
+.social-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+  }
+  
+  .user-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  
+  .user-card {
+    border: 1px solid #ccc;
+    padding: 15px;
+    width: 200px;
+    text-align: center;
+    border-radius: 5px;
+    box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .friend-button {
+    margin-top: 10px;
+    padding: 8px;
+    width: 100%;
+    border: none;
+    color: #fff;
+    background-color: #007bff;
+    cursor: pointer;
+    border-radius: 3px;
+  }
+  
+  .friend-button.added {
+    background-color: #28a745;
+    cursor: default;
+  }
+  

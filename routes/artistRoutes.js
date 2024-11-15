@@ -1,10 +1,11 @@
 // routes/artistRoutes.js
 const express = require('express');
 const router = express.Router();
-const { artistsPage, buyTicket } = require('../controllers/artistsController');
+const { artistsPage, buyTicket, sellTicket } = require('../controllers/artistsController');
 
 // Artist routes
-router.get('/artists', artistsPage);
-router.post('/artists/buy', buyTicket);
+router.get('/', artistsPage);
+router.post('/buy', buyTicket);
+router.post('/sell', sellTicket);
 
 module.exports = router;

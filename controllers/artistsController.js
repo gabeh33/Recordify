@@ -49,7 +49,8 @@ exports.buyTicket = async (req, res) => {
     const artist = await Artist.findById(artistId);
     const user = await User.findById(userId);
 
-    if (!artist || !user) return res.status(404).send('Artist or user not found');
+    if (!artist) return res.status(404).send('Artist not found');
+    if (!user) return res.redirect('/auth/login');
 
     const ticketPrice = artist.ticket_info.ticket_price;
     if (artist.ticket_info.num_tickets_available <= 0) return res.send('<h2>No tickets available to buy!</h2>');
@@ -74,4 +75,53 @@ exports.buyTicket = async (req, res) => {
     console.error('Error buying ticket:', error);
     res.status(500).send('Error processing the buy request');
   }
+};
+
+// Sell a ticket
+exports.sellTicket = async (req, res) => {
+  const { artistId } = req.body;
+  const userId = req.session.userId;
+  try {
+    const artist = await Artist.findById(artistId);
+    const user = await User.findById(userId);
+
+    if (!artist) return res.status(404).send('Artist not found');
+    if (!user) return res.redirect('/auth/login');
+
+    const ticketPrice = artist.ticket_info.ticket_price;
+
+    // Check to see if the user has a ticket
+    const userTicket = user.tickets.find(ticket => ticket.artistId.toString() === artistId.toString());
+
+    if (!userTicket) {
+      return res.status(400).send('You do not have a ticket for this artist');
+    }
+
+    // Check if the user has more than one ticket for the artist
+    if (userTicket.quantity > 1) {
+      // If the user has more than one ticket, just decrease the quantity by 1
+      console.log("removing ticket")
+      userTicket.quantity -= 1;
+      res.send(`<h2>You have successfully sold a ${artist.artist_name} ticket!</h2><h3>Remaining tickets: ${userTicket.quantity}`);
+    } else {
+      // If the user only has one ticket, remove it completely from the array
+      user.tickets = user.tickets.filter(ticket => ticket.artistId.toString() !== artistId.toString());
+      res.send(`<h2>You have sold your final ${artist.artist_name} ticket!</h2>`);
+    }
+
+    // Increase the number of available tickets for the artist
+    artist.ticket_info.num_tickets_available += 1;
+
+    user.balance += ticketPrice;
+
+    // Save the updated user and artist data
+    await user.save();
+    await artist.save();
+
+    
+  } catch (error) {
+    console.error('Error buying ticket:', error);
+    res.status(500).send('Error processing the buy request');
+  }
+
 };

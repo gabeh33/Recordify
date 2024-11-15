@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Social Page</title>
+  <link rel="stylesheet" href="/social.css"> <!-- Link to custom stylesheet -->
+</head>
+<body>
+  <div class="social-container">
+    <h1>Social Page</h1>
+    <p>Connect with other users!</p>
+
+    <div class="user-list">
+      <% users.forEach(user => { %>
+        <div class="user-card">
+          <h2><%= user.username %></h2>
+          <p><%= user.bio || 'This user has no bio.' %></p> <!-- Display bio if available -->
+          
+          <!-- Add Friend Form -->
+          <form action="/friends/add" method="POST" class="add-friend-form">
+            <input type="hidden" name="friendId" value="<%= user._id %>">
+            <% if (user.isFriend) { %>
+              <button type="button" disabled class="friend-button added">Friend Added</button>
+            <% } else { %>
+              <button type="submit" class="friend-button">Add Friend</button>
+            <% } %>
+          </form>
+        </div>
+      <% }); %>
+    </div>
+  </div>
+</body>
+</html>

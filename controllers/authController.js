@@ -3,7 +3,7 @@ const User = require('../models/UserModel');
 
 // Render login page
 exports.loginPage = (req, res) => {
-  res.render('login', { activePage: 'login', title: 'login' });
+  res.render('login', { activePage: 'login', title: 'login', error: null });
 };
 
 // Handle login request
@@ -12,7 +12,7 @@ exports.login = async (req, res) => {
 
   try {
     const user = await User.findOne({ username });
-    if (!user) return res.render('login', { error: 'Invalid username or password' });
+    if (!user) return res.render('login', { title: 'login', activePage: 'login', error: 'Account does not exist' });
 
     const isMatch = await user.comparePassword(password);
     if (isMatch) {
@@ -20,7 +20,7 @@ exports.login = async (req, res) => {
       req.session.user = user;
       return res.redirect('/profile');
     }
-    return res.render('login', { error: 'Invalid username or password' });
+    return res.render('login', { title: 'login', activePage: 'login', error: 'Invalid credentials' });
   } catch (error) {
     console.error(error);
     res.render('login', { error: 'An error occurred. Please try again.' });
@@ -33,7 +33,7 @@ exports.logout = (req, res) => {
     if (err) {
       return res.status(500).send('Error logging out');
     }
-    res.redirect('/login');
+    res.redirect('/auth/login');
   });
 };
 
@@ -52,7 +52,7 @@ exports.signup = async (req, res) => {
 
     const newUser = new User({ username, password, email });
     await newUser.save();
-    res.redirect('/login');
+    res.redirect('/auth/login');
   } catch (error) {
     console.error(error);
     res.render('signup', { error: 'Error during signup, please try again' });

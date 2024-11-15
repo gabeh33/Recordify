@@ -1,9 +1,10 @@
 
+const User = require('../models/UserModel')
 // Render login page
 exports.profilePage = (req, res) => {
     // Check if the user is authenticated
     if (!req.session.userId) {
-        return res.redirect('/login'); // Redirect to login if not authenticated
+        return res.redirect('/auth/login'); // Redirect to login if not authenticated
     }
 
     // Find the user by their session ID and populate the artist data for tickets
@@ -12,7 +13,7 @@ exports.profilePage = (req, res) => {
         .select('username email tickets balance') // Select specific fields
         .then(user => {
     if (!user) {
-        return res.redirect('/login');
+        return res.redirect('/auth/login');
     }
 
     // Render the profile page with user data and additional view info
