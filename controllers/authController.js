@@ -1,5 +1,7 @@
 // controllers/authController.js
 const User = require('../models/UserModel');
+const JWT_SECRET = process.env.JWT_SECRET;
+const jwt = require('jsonwebtoken');
 
 // Render login page
 exports.loginPage = (req, res) => {
@@ -12,18 +14,37 @@ exports.login = async (req, res) => {
 
   try {
     const user = await User.findOne({ username });
-    if (!user) return res.render('login', { title: 'login', activePage: 'login', error: 'Account does not exist' });
+    if (!user) return res.status(401).json({ success: false, message: 'User not found' });
 
     const isMatch = await user.comparePassword(password);
-    if (isMatch) {
-      req.session.userId = user._id;
-      req.session.user = user;
-      return res.redirect('/profile');
+    if (!isMatch) {
+      return res.status(401).json({ success: false, message: 'Invalid password' });
     }
-    return res.render('login', { title: 'login', activePage: 'login', error: 'Invalid credentials' });
+
+    // Create a JWT token
+    const token = jwt.sign(
+      {
+          id: user._id, // Include user ID in the payload
+          username: user.username,
+      },
+      JWT_SECRET, // Use your secret key
+      { expiresIn: '12h' } // Token expires in 1 hour
+  );
+
+    // Respond with the token and user details
+    return res.status(200).json({
+      success: true,
+      message: 'Login successful',
+      token,
+      user: {
+          id: user._id,
+          username: user.username,
+          email: user.email,
+      },
+  });
   } catch (error) {
-    console.error(error);
-    res.render('login', { error: 'An error occurred. Please try again.' });
+    console.error('Login error:', error);
+    return res.status(500).json({ success: false, message: 'Server error' });
   }
 };
 

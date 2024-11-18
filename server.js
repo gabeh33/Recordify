@@ -8,6 +8,7 @@ const artistRoutes = require('./routes/artistRoutes'); // Artist routes
 const userRoutes = require('./routes/userRoutes');   // User routes
 const socialRoutes = require('./routes/socialRoutes');   // User routes
 const my_session = require('./config/session');
+const authenticateToken = require('./middleware/authenticateToken');
 
 // Initialize express app
 const app = express();
@@ -48,6 +49,9 @@ app.get('/login', (req, res) => res.redirect('/auth/login'));
 // Catchall for logging in
 app.post('/logout', (req, res) => res.redirect('/auth/logout'));
 
+app.get('/pping', authenticateToken, (req, res) => {
+    res.status(200).json({ success: true, message: 'Welcome to the protected route!', user: req.user });
+});
 
 
 // Start server
