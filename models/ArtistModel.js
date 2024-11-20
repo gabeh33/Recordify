@@ -25,10 +25,6 @@ const artistSchema = new mongoose.Schema({
         required: true, 
         unique: true },
 
-    local_id: { type: String, 
-        required: true,
-        default: "NOT SET" }, 
-
     ticket_info: { 
         type: ticketInfoSchema, 
         required: true, 
