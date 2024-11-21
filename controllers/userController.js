@@ -112,7 +112,6 @@ exports.upload = [
     async (req, res) => {
         try {
             // Retrieve the user ID (assumes authentication middleware sets req.user)
-            
             const userId = req.user.id;
 
             // Check if a file was uploaded
@@ -134,6 +133,7 @@ exports.upload = [
             }
 
             user.profilePicture = req.file.buffer; // Store image as binary data
+            console.log(req);
             await user.save();
 
             res.status(200).json({
