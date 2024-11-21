@@ -1,11 +1,12 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/UserModel');
+const multer = require('multer');
+const authenticateToken = require('../middleware/authenticateToken');
 
 // Profile endpoint with token authentication
 exports.getProfile = (req, res) => {
     // Extract token from the request headers
     const token = req.headers.authorization?.split(' ')[1];
-    console.log("received profile request");
     if (!token) {
         return res.status(401).json({ success: false, message: 'No token provided.' });
     }
@@ -91,3 +92,60 @@ exports.depositMoney = (req, res) => {
         return res.status(401).json({ success: false, message: 'Invalid token.' });
     }
 };
+
+
+// Configure Multer to handle file uploads
+const upload = multer({
+    limits: { fileSize: 5 * 1024 * 1024 }, // Limit file size to 5MB
+    fileFilter(req, file, cb) {
+        if (!file.mimetype.startsWith('image/')) {
+            return cb(new Error('File must be an image.'));
+        }
+        cb(null, true);
+    },
+});
+
+
+// Upload endpoint
+exports.upload = [
+    upload.single('profilePicture'), // Handle a single file upload
+    async (req, res) => {
+        try {
+            // Retrieve the user ID (assumes authentication middleware sets req.user)
+            authenticateToken(req, res);
+            const userId = req.user.id;
+
+            // Check if a file was uploaded
+            if (!req.file) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'No file uploaded.',
+                });
+            }
+
+            // Find the user and update their profilePicture field
+            const user = await User.findById(userId);
+
+            if (!user) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'User not found.',
+                });
+            }
+
+            user.profilePicture = req.file.buffer; // Store image as binary data
+            await user.save();
+
+            res.status(200).json({
+                success: true,
+                message: 'Profile picture uploaded successfully.',
+            });
+        } catch (error) {
+            console.error('Error uploading profile picture:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Server error. Please try again later.',
+            });
+        }
+    },
+];

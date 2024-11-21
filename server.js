@@ -33,6 +33,7 @@ connectDB();
 app.use('/auth', authRoutes);      // All auth-related routes
 app.use('/artists', artistRoutes); // All artist-related routes
 app.use('/profile', userRoutes);      // All user-related routes
+app.use('/social', socialRoutes);
 
 // Basic routes
 app.get('/', (req, res) => res.redirect('/home'));
@@ -40,9 +41,6 @@ app.get('/home', (req, res) => res.render('home', { activePage: 'home', title: '
 
 // Ping route for health check
 app.get('/ping', (req, res) => res.send("Pong"));
-
-
-app.use('/social', socialRoutes);
 
 // Catchall for logging in
 app.get('/login', (req, res) => res.redirect('/auth/login'));
@@ -52,7 +50,6 @@ app.post('/logout', (req, res) => res.redirect('/auth/logout'));
 app.get('/pping', authenticateToken, (req, res) => {
     res.status(200).json({ success: true, message: 'Welcome to the protected route!', user: req.user });
 });
-
 
 // Start server
 const PORT = process.env.PORT || 5555;

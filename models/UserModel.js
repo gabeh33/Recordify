@@ -5,8 +5,10 @@ const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
     username: { type: String, required: true, unique: true },
+    bio: {type: String, required: false, unqiue: false}, 
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true }, 
+    profilePicture: { type: Buffer },
     tickets: [
         {
           artistId: { type: mongoose.Schema.Types.ObjectId, ref: 'Artist' },
