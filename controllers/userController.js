@@ -1,67 +1,93 @@
+const jwt = require('jsonwebtoken');
+const User = require('../models/UserModel');
 
-const User = require('../models/UserModel')
-// Render login page
-exports.profilePage = (req, res) => {
-    // Check if the user is authenticated
-    if (!req.session.userId) {
-        return res.redirect('/auth/login'); // Redirect to login if not authenticated
+// Profile endpoint with token authentication
+exports.getProfile = (req, res) => {
+    // Extract token from the request headers
+    const token = req.headers.authorization?.split(' ')[1];
+
+    if (!token) {
+        return res.status(401).json({ success: false, message: 'No token provided.' });
     }
 
-    // Find the user by their session ID and populate the artist data for tickets
-    User.findById(req.session.userId)
-        .populate('tickets.artistId')  // Populate artist data
-        .select('username email tickets balance') // Select specific fields
-        .then(user => {
-    if (!user) {
-        return res.redirect('/auth/login');
+    try {
+        // Verify the token
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const userId = decoded.id;
+
+        // Find the user by their ID and populate the artist data for tickets
+        User.findById(userId)
+            .populate('tickets.artistId') // Populate artist data
+            .select('username email tickets balance') // Select specific fields
+            .then(user => {
+                if (!user) {
+                    return res.status(404).json({ success: false, message: 'User not found.' });
+                }
+
+                // Return user data as JSON
+                res.status(200).json({
+                    success: true,
+                    user: {
+                        username: user.username,
+                        email: user.email,
+                        tickets: user.tickets,
+                        balance: user.balance,
+                    },
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching user profile:', error);
+                res.status(500).json({ success: false, message: 'Server error.' });
+            });
+    } catch (error) {
+        console.error('Error verifying token:', error);
+        return res.status(401).json({ success: false, message: 'Invalid token.' });
     }
+};
 
-    // Render the profile page with user data and additional view info
-    res.render('profile', { 
-        user,
-        activePage: 'profile',
-        title: 'Profile'
-      });
-    })
-    .catch(error => {
-      console.error('Error fetching user profile:', error);
-      res.status(500).send('Server Error');
-    });
-  };
-
-  // Render login page
 exports.depositMoney = (req, res) => {
-    const { amount } = req.body;
-    const depositAmount = parseFloat(amount);
+    const token = req.headers.authorization?.split(' ')[1];
 
-    // Check if the deposit amount is invalid or less than or equal to zero
-    if (isNaN(depositAmount) || depositAmount <= 0) {
-        return res.status(400).send("Invalid deposit amount.");
+    if (!token) {
+        return res.status(401).json({ success: false, message: 'No token provided.' });
     }
 
-    // Find the user by their ID and update the balance atomically using .then()
-    User.findByIdAndUpdate(
-        req.session.userId,
-    {
-        $inc: { balance: depositAmount }, // Increment the user's balance
-    },
-        { new: true } // Ensure that the updated user document is returned
-    ).then(user => {
-    
-    if (!user) {
-      return res.status(404).send("User not found.");
+    try {
+        // Verify the token
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const userId = decoded.id;
+
+        const { amount } = req.body;
+        const depositAmount = parseFloat(amount);
+
+        if (isNaN(depositAmount) || depositAmount <= 0) {
+            return res.status(400).json({ success: false, message: 'Invalid deposit amount.' });
+        }
+
+        // Find the user by their ID and update the balance
+        User.findByIdAndUpdate(
+            userId,
+            { $inc: { balance: depositAmount } }, // Increment the user's balance
+            { new: true } // Return the updated user document
+        )
+            .then(user => {
+                if (!user) {
+                    return res.status(404).json({ success: false, message: 'User not found.' });
+                }
+
+                // Return the updated balance
+                res.status(200).json({
+                    success: true,
+                    message: 'Balance updated successfully.',
+                    balance: user.balance,
+                });
+            })
+            .catch(error => {
+                console.error('Error updating balance:', error);
+                res.status(500).json({ success: false, message: 'Server error.' });
+            });
+    } catch (error) {
+        console.error('Error verifying token:', error);
+        return res.status(401).json({ success: false, message: 'Invalid token.' });
     }
-
-    // Update the session with the new user data to reflect the updated balance
-    req.session.user = user;
-
-    // Redirect the user back to their profile page
-        res.redirect('/profile');
-    })
-    .catch(error => {
-        console.error("Error updating balance:", error);
-
-        // If an error occurs, return an error message to the user
-        res.status(500).send("An error occurred while updating your balance.");
-    });
-  };
+};

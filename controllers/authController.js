@@ -28,7 +28,7 @@ exports.login = async (req, res) => {
           username: user.username,
       },
       JWT_SECRET, // Use your secret key
-      { expiresIn: '12h' } // Token expires in 1 hour
+      { expiresIn: '12h' } // Token expires in 12 hours
   );
 
     // Respond with the token and user details
