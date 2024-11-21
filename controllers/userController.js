@@ -149,3 +149,22 @@ exports.upload = [
         }
     },
 ];
+
+exports.getProfilePicture = async (req, res) => {
+    try {
+        const userId = req.user.id; // Assuming authentication middleware provides req.user
+
+        const user = await User.findById(userId);
+
+        if (!user || !user.profilePicture) {
+            return res.status(404).send('No profile picture found.');
+        }
+
+        // Set the appropriate content type for the response
+        res.set('Content-Type', 'image/png'); // Assuming the image is a PNG
+        res.send(user.profilePicture);
+    } catch (error) {
+        console.error('Error fetching profile picture:', error);
+        res.status(500).send('Server error.');
+    }
+};
