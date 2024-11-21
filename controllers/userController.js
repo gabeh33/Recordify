@@ -112,7 +112,7 @@ exports.upload = [
     async (req, res) => {
         try {
             // Retrieve the user ID (assumes authentication middleware sets req.user)
-            //authenticateToken(req, res); # FIX THIS
+            authenticateToken(req, res); 
             const userId = req.user.id;
 
             // Check if a file was uploaded
