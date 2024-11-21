@@ -5,7 +5,7 @@ const User = require('../models/UserModel');
 exports.getProfile = (req, res) => {
     // Extract token from the request headers
     const token = req.headers.authorization?.split(' ')[1];
-
+    console.log("received profile request");
     if (!token) {
         return res.status(401).json({ success: false, message: 'No token provided.' });
     }
