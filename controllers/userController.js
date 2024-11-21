@@ -161,6 +161,7 @@ exports.getProfilePicture = async (req, res) => {
         }
 
         // Set the appropriate content type for the response
+        console.log("sending back profile picture");
         res.set('Content-Type', 'image/png'); // Assuming the image is a PNG
         res.send(user.profilePicture);
     } catch (error) {
