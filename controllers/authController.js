@@ -69,13 +69,19 @@ exports.signup = async (req, res) => {
 
   try {
     const existingUser = await User.findOne({ username });
-    if (existingUser) return res.render('signup', { error: 'Username already taken' });
-
+    if (existingUser) 
+      return res.status(401).json({
+        success: false,
+        message: 'Username taken',
+    });
     const newUser = new User({ username, password, email });
     await newUser.save();
-    res.redirect('/auth/login');
+    return res.status(200).json({
+      success: true,
+      message: "Successfully registered"
+    })
   } catch (error) {
     console.error(error);
-    res.render('signup', { error: 'Error during signup, please try again' });
+    return res.status(500).json({ success: false, message: 'Server error' });
   }
 };
