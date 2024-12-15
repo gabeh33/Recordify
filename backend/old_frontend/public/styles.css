@@ -1,0 +1,229 @@
+/* Global Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f9;
+  color: #333;
+  margin: 0;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Containers */
+.container, .login-container, .signup-container, .profile-container {
+  max-width: 400px;
+  margin: 5rem auto;
+  padding: 2rem;
+  text-align: center;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.profile-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 800px;
+}
+
+/* Headings */
+h1 {
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 1.5rem;
+}
+
+h1.profile-title {
+  font-size: 1.8rem;
+}
+
+p, label {
+  font-size: 1.1rem;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+/* Forms */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+input {
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+input[type="number"] {
+  width: 60%;
+  font-size: 1em;
+  margin-right: 5px;
+}
+
+/* Buttons */
+button {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+button:hover {
+  background-color: #45a049;
+  transform: scale(1.05);
+}
+
+.buy-button {
+  background-color: #28a745; /* Green */
+}
+
+.buy-button:hover {
+  background-color: #218838;
+}
+
+.sell-button {
+  background-color: #dc3545; /* Red */
+}
+
+.sell-button:hover {
+  background-color: #c82333;
+}
+
+/* Search Form */
+.search-form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+  gap: 10px;
+}
+
+.search-form input {
+  width: 250px;
+  padding: 10px;
+  font-size: 1em;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  justify-content: center;
+}
+
+.search-form button {
+  padding: 10px 15px;
+  margin-left: 10px;
+}
+
+/* Artist Grid */
+.artists-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+  justify-items: center;
+  margin-top: 20px;
+}
+
+.artist-card {
+  width: 100%;
+  max-width: 300px;
+  padding: 20px;
+  text-align: center;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Pagination */
+.pagination {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.pagination a {
+  padding: 10px 15px;
+  color: #fff;
+  background-color: #4CAF50;
+  border-radius: 5px;
+  text-decoration: none;
+  margin: 0 5px;
+}
+
+.pagination a:hover {
+  background-color: #45a049;
+}
+
+.pagination a:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Links */
+a {
+  color: #4CAF50;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.error-message {
+  color: red;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+.tickets {
+  margin-top: 20px;
+}
+
+/* Navbar styles */
+.navbar {
+  background-color: #333;
+  overflow: hidden;
+}
+
+.navbar ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.navbar li {
+  padding: 14px 20px;
+}
+
+.navbar li a {
+  color: white;
+  text-decoration: none;
+  font-size: 16px;
+  display: block;
+  text-align: center;
+}
+
+.navbar li a:hover {
+  background-color: #575757;
+}
+
+.navbar li a.active {
+  background-color: #4CAF50; /* Highlight active link with a different color */
+}
