@@ -1,9 +1,24 @@
-# Recordify
-Main repo for the Recordify app prototyping
+# Routes Documentation
 
-## Resources:
-https://docs.google.com/document/d/1h82NW3Bbyx4xBhytgZjnuSdT1WwaohJ8BawLIFZSJ1M/edit?tab=t.0
+This document provides an overview of the routes available in the application, along with their HTTP methods, descriptions, required parameters, and responses.
 
-### MongoDB Platform
-https://cloud.mongodb.com/v2/673191e1191c9a174aeba318#/overview?automateSecurity=true
+---
 
+## Table of Contents
+
+1. [General Routes](#general-routes)
+2. [User Routes](#user-routes)
+3. [Product Routes](#product-routes)
+
+---
+
+## General Routes
+
+### `GET /`
+- **Description**: Redirects user to /home.
+- **Required Parameters**: None
+- **Response**:
+  ```json
+  {
+    "message": "Welcome to the API"
+  }
