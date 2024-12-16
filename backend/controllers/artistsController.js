@@ -4,8 +4,12 @@ const User = require('../models/UserModel');
 
 // Render artists page
 exports.artistsPage = async (req, res) => {
+  // Search - Look for specific artist
+  // Sort - Which field to sort by in each artist entry
+  // Order - Alphabetical (ascending) if does not equal 'desc'
+  // Page 
   const { search, sort, order, page = 1 } = req.query;
-  const limit = 15;
+  const limit = 15; // Number of artists returned, aka page limit
   const skip = (page - 1) * limit;
   
   const query = {};
