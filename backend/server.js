@@ -25,6 +25,7 @@ app.use('/', allRoutes);
 // Ping route for health check
 app.get('/ping', (req, res) => res.status(200).json({'Online': 'True'}));
 app.get('/home', (req, res) => res.status(200).send("one"));
+app.get('/', (req, res) => res.send("Online"));
 
 app.get('/pping', authenticateToken, (req, res) => {
     res.status(200).json({ success: true, message: 'Welcome to the protected route!', user: req.user });
