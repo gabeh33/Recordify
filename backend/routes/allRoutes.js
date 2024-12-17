@@ -17,7 +17,7 @@ router.post('/login', login); // To login
 router.post('/signup', signup); // To signup
 
 //---------------------------------------------- User Routes ----------------------------------------------//
-router.get('/profile', getProfile);
+router.get('/profile', getProfile); 
 router.post('/profile/deposit', depositMoney);
 
 //---------------------------------------------- Social Routes ----------------------------------------------//

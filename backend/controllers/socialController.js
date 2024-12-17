@@ -13,7 +13,7 @@ exports.socialPage = async (req, res) => {
             isFriend: user.friends && user.friends.includes(req.session.userId) // Replace this with actual logic
         }));
         // Render the EJS file, passing the `users` array
-        res.render('addFriends', { users: updatedUsers, title: 'Social Page', activePage: 'social' });
+        res.status(200).json({ 'users': updatedUsers});
         
     } catch (error) {
         console.error(error);
