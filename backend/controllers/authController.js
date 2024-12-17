@@ -3,11 +3,6 @@ const User = require('../models/UserModel');
 const JWT_SECRET = process.env.JWT_SECRET;
 const jwt = require('jsonwebtoken');
 
-// Render login page (GET)
-exports.loginPage = (req, res) => {
-  res.json({ activePage: 'login', title: 'login', error: null });
-};
-
 // Handle login request (POST)
 exports.login = async (req, res) => {
   const { username, password } = req.body;
@@ -52,16 +47,12 @@ exports.login = async (req, res) => {
 exports.logout = (req, res) => {
   req.session.destroy((err) => {
     if (err) {
-      return res.status(500).send('Error logging out');
+      return res.status(500).json({'Successful Logout': 'False'});
     }
-    res.redirect('/auth/login');
+    res.status(200).json({"Successful Logout": "True"})
   });
 };
 
-// Render signup page (GET)
-exports.signupPage = (req, res) => {
-  res.status(200).json({ activePage: 'signup', title: 'signup' }); 
-};
 
 // Handle signup request
 exports.signup = async (req, res) => {
@@ -69,11 +60,17 @@ exports.signup = async (req, res) => {
 
   try {
     const existingUser = await User.findOne({ username });
-    if (existingUser) 
+    const existingEmail = await User.findOne({ email });
+    if (existingUser) { 
       return res.status(401).json({
         success: false,
         message: 'Username taken',
-    });
+    })} else if (existingEmail) {
+      return res.status(401).json({
+        success: false,
+        message: 'Email taken',
+    })};
+
     const newUser = new User({ username, password, email });
     await newUser.save();
     return res.status(201).json({
